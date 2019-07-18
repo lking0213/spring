@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    #url: jdbc:mysql://localhost:3306/webstarter?useLegacyDatetimeCode=false&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://192.168.100.91:3306/test?useLegacyDatetimeCode=false&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&allowPublicKeyRetrieval=true
+    username: hxzh
+    password: 1Q2w3e4r5t!@
+    initialization-mode: never
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  jpa:
+    hibernate:
+#      ddl-auto: update
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect  ## org.hibernate.dialect.MySQL5InnoDBDialect
+      format_sql: false
+    show-sql: true
