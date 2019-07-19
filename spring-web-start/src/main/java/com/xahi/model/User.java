@@ -22,6 +22,7 @@ import java.util.Set;
 @Table(name = "t_user")
 @EntityListeners(AuditingEntityListener.class)
 public class User extends AbstractAuditable<User, Long> {
+//public class User extends AbstractAuditableModel<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

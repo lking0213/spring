@@ -1,15 +1,16 @@
 package com.xahi.filter;
 
-import com.xahi.model.User;
-import com.xahi.repository.UserRepository;
 import com.xahi.util.Constants;
 import com.xahi.util.HttpUtils;
 import com.xahi.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,7 +30,8 @@ import java.util.Map;
 public class JwtFilter extends OncePerRequestFilter{
 
     @Autowired
-    private UserRepository userRepository;
+    @Qualifier("userDetailServiceImpl")
+    private UserDetailsService userDetailsService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -57,8 +59,10 @@ public class JwtFilter extends OncePerRequestFilter{
             }
 
             Object username = claims.get("username");
-            User user = userRepository.findByUsername((String) username).orElseThrow(() -> new UsernameNotFoundException("username is not exist" + username));
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(String.valueOf(username));
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
+                    null, userDetails.getAuthorities());
+            usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
             token = JwtUtil.refreshToken(token);
@@ -66,7 +70,9 @@ public class JwtFilter extends OncePerRequestFilter{
 
             filterChain.doFilter(request, response);
         } catch (Exception e){
+            e.printStackTrace();
             log.warn("[{}]JWT auth fail: {}", clientIp, e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
             return;
         }
 

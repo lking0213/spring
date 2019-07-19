@@ -36,8 +36,8 @@ public class ApplicationSetup {
                     roleRepository.save(role);
                 });
 
-        Role roleAdmin = roleRepository.findByRoleName(RoleName.ADMIN).orElseThrow(() -> new RuntimeException("role admin is not exist"));
-        Role roleUser = roleRepository.findByRoleName(RoleName.USER).orElseThrow(() -> new RuntimeException("role user is not exist"));
+        Role roleAdmin = roleRepository.findByRoleName(RoleName.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("role admin is not exist"));
+        Role roleUser = roleRepository.findByRoleName(RoleName.ROLE_USER).orElseThrow(() -> new RuntimeException("role user is not exist"));
 
 
         User user = new User();
